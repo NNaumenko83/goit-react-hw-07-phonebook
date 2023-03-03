@@ -6,7 +6,6 @@ import * as yup from 'yup';
 import 'yup-phone';
 import PropTypes from 'prop-types';
 import { useAddContactMutation } from 'redux/contactsApi';
-import { useGetContactsQuery } from 'redux/contactsApi';
 import { toast } from 'react-toastify';
 import { Oval } from 'react-loader-spinner';
 
@@ -24,7 +23,7 @@ const ConttForm = styled(Form)`
   font-size: 20px;
 `;
 
-const initialValues = { name: '', number: '' };
+const initialValues = { name: '', phone: '' };
 
 const nameRegExp = /^[a-zA-Zа-яА-Я]+(([' -][a-zA-Zа-яА-Я ])?[a-zA-Zа-яА-Я]*)*$/;
 
@@ -40,7 +39,7 @@ let SignupSchema = yup.object().shape({
       "Name may contain only letters, apostrophe, dash and spaces. For example Adrian, Jacob Mercer, Charles de Batz de Castelmore d'Artagnan"
     )
     .required(),
-  number: yup
+  phone: yup
     .string()
     .matches(
       phoneRegExp,
@@ -50,7 +49,7 @@ let SignupSchema = yup.object().shape({
 });
 
 const ContactForm = ({ contacts }) => {
-  const [addContact, { isLoading, isError }] = useAddContactMutation();
+  const [addContact, { isLoading }] = useAddContactMutation();
 
   const handleSubmit = async (values, { resetForm }) => {
     if (checkContactName(values.name)) {
@@ -66,7 +65,6 @@ const ContactForm = ({ contacts }) => {
       });
       return;
     }
-
     await addContact(values).unwrap();
     toast.success('Contact is added to your phonebook', {
       position: 'top-center',
@@ -100,8 +98,8 @@ const ContactForm = ({ contacts }) => {
 
         <Label>
           Number
-          <Input type="tel" name="number" required />
-          <ErrorMessage name="number" component="span" />
+          <Input type="tel" name="phone" required />
+          <ErrorMessage name="phone" component="span" />
         </Label>
 
         <Button type="submit" disabled={isLoading}>

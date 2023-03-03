@@ -8,7 +8,16 @@ export const ContItem = styled.li`
 
 export const Button = styled.button`
   display: flex;
+  margin-left: auto;
   justify-content: space-around;
   width: 100px;
   font-size: 20px;
+`;
+
+export const Name = styled.span`
+  color: #37474f;
+  font-weight: 500;
+`;
+
+export const Phone = styled`
 `;
