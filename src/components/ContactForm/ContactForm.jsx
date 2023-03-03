@@ -1,10 +1,14 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import { Label, Button } from './ContactForm.styled';
 import styled from '@emotion/styled';
 import * as yup from 'yup';
 import 'yup-phone';
 import PropTypes from 'prop-types';
+import { useAddContactMutation } from 'redux/contactsApi';
+import { useGetContactsQuery } from 'redux/contactsApi';
+import { toast } from 'react-toastify';
+import { Oval } from 'react-loader-spinner';
 
 const Input = styled(Field)`
   max-width: 100%;
@@ -45,39 +49,82 @@ let SignupSchema = yup.object().shape({
     .required(),
 });
 
-class ContactForm extends Component {
-  handleSubmit = (values, { resetForm }) => {
-    this.props.onSubmit(values);
+const ContactForm = ({ contacts }) => {
+  const [addContact, { isLoading, isError }] = useAddContactMutation();
 
+  const handleSubmit = async (values, { resetForm }) => {
+    if (checkContactName(values.name)) {
+      toast.error('This contact is already exist', {
+        position: 'top-center',
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: 'colored',
+      });
+      return;
+    }
+
+    await addContact(values).unwrap();
+    toast.success('Contact is added to your phonebook', {
+      position: 'top-center',
+      autoClose: 3000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: 'colored',
+    });
     resetForm();
   };
 
-  render() {
-    return (
-      <Formik
-        initialValues={initialValues}
-        onSubmit={this.handleSubmit}
-        validationSchema={SignupSchema}
-      >
-        <ConttForm autoComplete="off">
-          <Label>
-            Name
-            <Input type="text" name="name" />
-            <ErrorMessage name="name" component="span" />
-          </Label>
+  const checkContactName = name => {
+    return contacts.find(contact => contact.name === name);
+  };
 
-          <Label>
-            Number
-            <Input type="tel" name="number" required />
-            <ErrorMessage name="number" component="span" />
-          </Label>
+  return (
+    <Formik
+      initialValues={initialValues}
+      onSubmit={handleSubmit}
+      validationSchema={SignupSchema}
+    >
+      <ConttForm autoComplete="off">
+        <Label>
+          Name
+          <Input type="text" name="name" />
+          <ErrorMessage name="name" component="span" />
+        </Label>
 
-          <Button type="submit">Add contact</Button>
-        </ConttForm>
-      </Formik>
-    );
-  }
-}
+        <Label>
+          Number
+          <Input type="tel" name="number" required />
+          <ErrorMessage name="number" component="span" />
+        </Label>
+
+        <Button type="submit" disabled={isLoading}>
+          {isLoading && (
+            <Oval
+              height={15}
+              width={15}
+              color="rgb(25, 0, 185)"
+              wrapperStyle={{}}
+              wrapperClass=""
+              visible={true}
+              ariaLabel="oval-loading"
+              secondaryColor="#4fa94d"
+              strokeWidth={2}
+              strokeWidthSecondary={2}
+            />
+          )}
+          Add contact
+        </Button>
+      </ConttForm>
+    </Formik>
+  );
+};
 
 ContactForm.propTypes = {
   onSubmit: PropTypes.func,

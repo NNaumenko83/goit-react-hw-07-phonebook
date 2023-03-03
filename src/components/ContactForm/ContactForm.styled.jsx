@@ -10,7 +10,8 @@ export const Label = styled.label`
 `;
 
 export const Button = styled.button`
+  display: flex;
+  justify-content: space-around;
   width: 150px;
-  margin: 0 auto;
   font-size: 20px;
 `;

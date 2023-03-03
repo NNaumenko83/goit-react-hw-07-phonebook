@@ -7,7 +7,8 @@ export const ContItem = styled.li`
 `;
 
 export const Button = styled.button`
-  width: 80px;
-
+  display: flex;
+  justify-content: space-around;
+  width: 100px;
   font-size: 20px;
 `;
